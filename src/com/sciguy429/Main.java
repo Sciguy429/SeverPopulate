@@ -17,15 +17,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class Main {
-
     static SyndFeed feed;
+    static Connection conn;
 
     public static void main(String[] args) {
+        try {
+            Class.forName("org.h2.Driver");
+            conn = DriverManager.getConnection("jdbc:h2:C:\\Users\\scigu\\Desktop\\Database\\scouting", "JAVAADMIN", "%Lc3W+z~Y`sQ*?Zk"); //Connect To The H2 DB With JAVAADMIN
+            //conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         InputStream is = null;
         try {
             URLConnection openConnection = new URL("https://www.thebluealliance.com/event/2018mosl/feed").openConnection();
@@ -56,6 +68,18 @@ public class Main {
             System.out.println("    Team B1: " + teams.get(3));
             System.out.println("    Team B2: " + teams.get(4));
             System.out.println("    Team B3: " + teams.get(5));
+
+            try {
+                Statement statement = conn.createStatement();
+                statement.executeUpdate("REPLACE INTO MATCHES VALUES (" + String.valueOf(matchNumber) + "," + String.valueOf(teams.get(0)) + ",null,null,null,null,null,null,null,null," + String.valueOf(teams.get(1)) + ",null,null,null,null,null,null,null,null," + String.valueOf(teams.get(2)) + ",null,null,null,null,null,null,null,null," + String.valueOf(teams.get(3)) + ",null,null,null,null,null,null,null,null," + String.valueOf(teams.get(4)) + ",null,null,null,null,null,null,null,null," + String.valueOf(teams.get(5)) + ",null,null,null,null,null,null,null,null);");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
